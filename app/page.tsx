@@ -1,65 +1,185 @@
-import Image from "next/image";
+// app/page.tsx
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import Image from 'next/image'
+
+export const metadata: Metadata = {
+  title: 'AI Blog – Novinky, návody a tipy',
+  description: 'Úvodní stránka blogu postaveného na Next.js s ukázkovými příspěvky.',
+  openGraph: {
+    title: 'AI Blog – Novinky, návody a tipy',
+    description: 'Úvodní stránka blogu postaveného na Next.js s ukázkovými příspěvky.',
+    type: 'website',
+    url: '/',
+  },
+  alternates: {
+    canonical: '/',
+  },
+}
+
+type Post = {
+  id: string
+  title: string
+  slug: string
+  excerpt: string
+  date: string
+  author: string
+  cover?: string
+  tags: string[]
+}
+
+const posts: Post[] = [
+  {
+    id: '1',
+    title: 'Jak začít s Next.js App Routerem',
+    slug: 'jak-zacit-s-nextjs-app-routerem',
+    excerpt: 'Praktický úvod do App Routeru a struktury složek pro moderní projekty.',
+    date: '2025-11-04',
+    author: 'Redakce',
+    cover: '/covers/nextjs.jpg',
+    tags: ['Next.js', 'Návod'],
+  },
+  {
+    id: '2',
+    title: 'SEO základy: Metadata API v praxi',
+    slug: 'seo-zaklady-metadata-api',
+    excerpt: 'Nastavení title, description a Open Graph metadat bez pluginů.',
+    date: '2025-11-03',
+    author: 'Redakce',
+    cover: '/covers/seo.jpg',
+    tags: ['SEO', 'Metadata'],
+  },
+  {
+    id: '3',
+    title: 'Plánování publikace a nasazení',
+    slug: 'planovani-publikace-a-nasadeni',
+    excerpt: 'Jak připravit blog na pravidelné publikování a automatické deploye.',
+    date: '2025-11-02',
+    author: 'Redakce',
+    cover: '/covers/deploy.jpg',
+    tags: ['Deployment', 'Workflow'],
+  },
+]
+
+function PostCard({ post }: { post: Post }) {
+  return (
+    <article style={{ border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden' }}>
+      {post.cover ? (
+        <div style={{ position: 'relative', width: '100%', height: 160 }}>
+          <Image src={post.cover} alt={post.title} fill style={{ objectFit: 'cover' }} />
+        </div>
+      ) : null}
+      <div style={{ padding: 16 }}>
+        <div style={{ fontSize: 12, color: '#6b7280' }}>
+          {new Date(post.date).toLocaleDateString('cs-CZ')} • {post.author}
+        </div>
+        <h3 style={{ margin: '8px 0' }}>
+          <Link href={`/posts/${post.slug}`} style={{ textDecoration: 'none', color: '#111827' }}>
+            {post.title}
+          </Link>
+        </h3>
+        <p style={{ color: '#374151' }}>{post.excerpt}</p>
+        <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {post.tags.map((t) => (
+            <span
+              key={t}
+              style={{
+                fontSize: 12,
+                padding: '2px 8px',
+                background: '#f3f4f6',
+                borderRadius: 999,
+                color: '#374151',
+              }}
+            >
+              #{t}
+            </span>
+          ))}
+        </div>
+      </div>
+    </article>
+  )
+}
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main style={{ maxWidth: 960, margin: '0 auto', padding: 24 }}>
+      {/* Hero */}
+      <section style={{ padding: '40px 0', textAlign: 'center' }}>
+        <h1 style={{ fontSize: 36, marginBottom: 12 }}>AI Blog</h1>
+        <p style={{ fontSize: 18, color: '#4b5563' }}>
+          Novinky, návody a tipy pro moderní web a automatizaci obsahu.
+        </p>
+      </section>
+
+      {/* Featured / Latest */}
+      <section style={{ display: 'grid', gap: 16, gridTemplateColumns: '1fr 1fr 1fr' }}>
+        {posts.map((p) => (
+          <PostCard key={p.id} post={p} />
+        ))}
+      </section>
+
+      {/* Categories */}
+      <section style={{ marginTop: 40 }}>
+        <h2 style={{ fontSize: 24, marginBottom: 12 }}>Kategorie</h2>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          {['Next.js', 'SEO', 'AI', 'Workflow', 'Deployment'].map((c) => (
+            <Link
+              key={c}
+              href={`/tags/${encodeURIComponent(c.toLowerCase())}`}
+              style={{
+                fontSize: 14,
+                padding: '6px 10px',
+                background: '#eef2ff',
+                color: '#4338ca',
+                borderRadius: 8,
+                textDecoration: 'none',
+              }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              {c}
+            </Link>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      </section>
+
+      {/* Newsletter */}
+      <section style={{ marginTop: 40, padding: 24, border: '1px solid #e5e7eb', borderRadius: 8 }}>
+        <h2 style={{ fontSize: 24, marginBottom: 8 }}>Odebírej novinky</h2>
+        <p style={{ color: '#4b5563', marginBottom: 12 }}>
+          Jednou týdně shrnutí nejdůležitějších článků přímo do e‑mailu.
+        </p>
+        <form onSubmit={(e) => e.preventDefault()} style={{ display: 'flex', gap: 8 }}>
+          <input
+            type="email"
+            placeholder="tvuj@email.cz"
+            required
+            style={{
+              flex: 1,
+              padding: '10px 12px',
+              border: '1px solid #d1d5db',
+              borderRadius: 6,
+              outline: 'none',
+            }}
+          />
+          <button
+            type="submit"
+            style={{
+              padding: '10px 16px',
+              background: '#111827',
+              color: 'white',
+              borderRadius: 6,
+              border: 'none',
+              cursor: 'pointer',
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+            Přihlásit
+          </button>
+        </form>
+      </section>
+
+      {/* Footer */}
+      <footer style={{ marginTop: 48, paddingTop: 24, borderTop: '1px solid #e5e7eb', color: '#6b7280' }}>
+        © {new Date().getFullYear()} AI Blog. Vytvořeno v Next.js.
+      </footer>
+    </main>
+  )
 }
